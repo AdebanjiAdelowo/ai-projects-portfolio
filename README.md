@@ -6,7 +6,7 @@
 
 ---
 
-A collection of end-to-end projects spanning large language models, computer vision, and generative AI — covering model optimization, NL2SQL pipelines, embedding-based systems, LangChain agents, RAG, evaluation frameworks, parameter-efficient fine-tuning, diffusion model adaptation, and image segmentation.
+A collection of end-to-end projects spanning large language models, computer vision, and generative AI: model optimization, NL2SQL pipelines, embedding-based systems, LangChain agents, RAG, evaluation frameworks, parameter-efficient fine-tuning, diffusion model adaptation, and image segmentation.
 
 ## Projects
 
@@ -28,7 +28,7 @@ A collection of end-to-end projects spanning large language models, computer vis
 
 **Folder:** `01-financial-sentiment-distillation/`
 
-A full model compression pipeline applied to FinBERT — a BERT-based financial sentiment classifier. Starting from the 110M-parameter baseline, the model is first pruned using Taylor-gradient importance scoring, then a knowledge distillation step recovers the accuracy lost during pruning.
+A full model compression pipeline applied to FinBERT, a BERT-based financial sentiment classifier. Starting from the 110M-parameter baseline, the model is first pruned using Taylor-gradient importance scoring, then a knowledge distillation step recovers the accuracy lost during pruning.
 
 **Pipeline:**
 ```
@@ -59,7 +59,7 @@ User Question → [Stage 1: Table Selector (GPT-3.5)] → Selected Tables
              → [Stage 2: SQL Generator (GPT-3.5 / GPT-4o-mini)] → SQL Query
 ```
 
-**Results:** ~60% token reduction by selecting only relevant tables; automatic model routing.
+**Results:** approximately 60% token reduction by selecting only relevant tables, plus automatic model routing between the two stages.
 
 **Tech stack:** OpenAI API, pandas, matplotlib
 
@@ -79,7 +79,7 @@ An embedding-powered risk assessment engine for a retail bank. Customer profiles
 
 **Folder:** `04-data-analyst-agent/`
 
-An autonomous data analyst agent built with LangChain and OpenAI that analyzes datasets through natural language. The agent identifies correlations, generates charts, selects forecasting models, and produces predictions — all from plain English instructions.
+An autonomous data analyst agent built with LangChain and OpenAI that analyzes datasets through natural language. The agent identifies correlations, generates charts, selects forecasting models, and produces predictions, all from plain English instructions.
 
 **Key techniques:** LangChain `create_pandas_dataframe_agent`, agentic reasoning, multi-step tool use, completion vs. chat model comparison.
 
@@ -91,7 +91,7 @@ An autonomous data analyst agent built with LangChain and OpenAI that analyzes d
 
 **Folder:** `05-medical-rag-assistant/`
 
-A conversational medical assistant using Retrieval-Augmented Generation (RAG). Embeds a medical Q&A knowledge base into ChromaDB and routes queries through a LangChain ReAct agent — answering clinical questions with grounded, context-aware responses while maintaining conversation memory.
+A conversational medical assistant using Retrieval-Augmented Generation (RAG). Embeds a medical Q&A knowledge base into ChromaDB and routes queries through a LangChain ReAct agent, answering clinical questions with grounded, context-aware responses while maintaining conversation memory.
 
 **Architecture:**
 ```
@@ -106,9 +106,9 @@ User Query → ReAct Agent → ChromaDB retrieval (medical) OR direct LLM (gener
 
 **Folder:** `06-llm-evaluation-langsmith/`
 
-A systematic evaluation framework comparing LLM summarization quality using LangSmith tracing and cosine embedding distance. Benchmarks T5-base, fine-tuned T5, and OpenAI GPT on the CNN/DailyMail dataset — demonstrating the cost-quality tradeoff between open-source and proprietary models.
+A systematic evaluation framework comparing LLM summarization quality using LangSmith tracing and cosine embedding distance. Benchmarks T5-base, fine-tuned T5, and OpenAI GPT on the CNN/DailyMail dataset, demonstrating the cost-quality tradeoff between open-source and proprietary models.
 
-**Results:** Fine-tuned T5 significantly outperforms zero-shot T5; OpenAI GPT achieves lowest embedding distance.
+**Results:** fine-tuned T5 significantly outperforms zero-shot T5; OpenAI GPT achieves the lowest embedding distance.
 
 **Tech stack:** LangSmith, LangChain, Hugging Face (T5), OpenAI, CNN/DailyMail dataset
 
@@ -122,7 +122,7 @@ Parameter-efficient fine-tuning of large language models using LoRA and QLoRA. D
 
 **Key concepts:**
 - **LoRA:** injects trainable low-rank matrices alongside frozen weights (`W' = W + α·AB`)
-- **QLoRA:** 4-bit NF4 quantization + LoRA — fine-tune 8B models on a single 16GB GPU
+- **QLoRA:** 4-bit NF4 quantization combined with LoRA, enabling fine-tuning of 8B models on a single 16GB GPU
 
 **Tech stack:** PEFT, BitsAndBytes, Transformers, trl, Llama 3
 
@@ -132,7 +132,7 @@ Parameter-efficient fine-tuning of large language models using LoRA and QLoRA. D
 
 **Folder:** `08-diffusion-lora-product-images/`
 
-Domain adaptation of a Stable Diffusion model (SDXL 1.0) on a curated eyewear product photography dataset using LoRA. Only low-rank adapter weights are trained on top of the frozen base model — enabling commercially-presentable domain-specific generation in ~4 hours on a free T4 GPU.
+Domain adaptation of a Stable Diffusion model (SDXL 1.0) on a curated eyewear product photography dataset using LoRA. Only low-rank adapter weights are trained on top of the frozen base model, enabling domain-specific generation in approximately 4 hours on a free-tier T4 GPU.
 
 **Pipeline:**
 ```
@@ -143,12 +143,12 @@ Raw Images → Curation (filter / resize / dedup) → BLIP-2 Auto-Caption (+ tri
 
 **Key techniques:**
 - LoRA adapter injection into U-Net cross-attention layers (`q`, `k`, `v`, `out`)
-- Automated dataset captioning with `Salesforce/blip2-opt-2.7b` + structured trigger-word prefix (`sks eyewear`)
-- DreamBooth-style training with `diffusers` + `peft` + `accelerate`
-- Before/after qualitative grids + CLIP-score quantitative evaluation
+- Automated dataset captioning with `Salesforce/blip2-opt-2.7b` plus a structured trigger-word prefix (`sks eyewear`)
+- DreamBooth-style training with `diffusers`, `peft`, and `accelerate`
+- Before/after qualitative grids and CLIP-score quantitative evaluation
 - ComfyUI workflow export for reproducible inference
 
-**Tech stack:** diffusers, PEFT, accelerate, BLIP-2, SDXL, open\_clip, Weights & Biases, ComfyUI
+**Tech stack:** diffusers, PEFT, accelerate, BLIP-2, SDXL, open_clip, Weights & Biases, ComfyUI
 
 ---
 
@@ -156,7 +156,7 @@ Raw Images → Curation (filter / resize / dedup) → BLIP-2 Auto-Caption (+ tri
 
 **Folder:** `09-product-image-segmentation/`
 
-A rigorous multi-model benchmark and production-ready pipeline for background removal on e-commerce product images. Three state-of-the-art segmentation models share a common `BaseSegmentationModel` interface and are evaluated head-to-head on IoU, Dice, MAD, and boundary F1 — with a FastAPI service exposing the best model.
+A multi-model benchmark and pipeline for background removal on e-commerce product images. Three segmentation models share a common `BaseSegmentationModel` interface and are evaluated head-to-head on IoU, Dice, MAD, and boundary F1, with a FastAPI service exposing the best model.
 
 **Architecture:**
 ```
@@ -176,7 +176,7 @@ Image → [Model: BiRefNet | U²-Net | MODNet]
 
 **Key techniques:**
 - Unified `predict(image) → float32 mask` interface across all models
-- Resize-with-padding + undo-padding to preserve original aspect ratio
+- Resize-with-padding and undo-padding to preserve original aspect ratio
 - Optional post-processing refinement (CRF / guided filter) via `--refine` flag
 - `SegmentationPipeline` with load-once / call-many lifecycle for efficient batch inference
 - FastAPI with module-level model cache (no reload per request)
@@ -194,8 +194,8 @@ Image → [Model: BiRefNet | U²-Net | MODNet]
 
 ### Installation
 ```bash
-git clone https://github.com/AdebanjiAdelowo/llm-portfolio.git
-cd llm-portfolio
+git clone https://github.com/AdebanjiAdelowo/ai-projects-portfolio.git
+cd ai-projects-portfolio
 
 # Install dependencies for a specific project
 pip install -r 04-data-analyst-agent/requirements.txt
@@ -211,19 +211,19 @@ HUGGINGFACEHUB_API_TOKEN=your_hf_token
 
 ---
 
-## Skills Demonstrated
+## Techniques Covered
 
-- **Agents & RAG** — LangChain agents, ChromaDB vector stores, ReAct reasoning, tool routing
-- **LLM Evaluation** — LangSmith tracing, embedding distance metrics, model benchmarking
-- **Fine-tuning & PEFT** — LoRA, QLoRA, 4-bit quantization, SFT training
-- **Diffusion model adaptation** — SDXL LoRA, DreamBooth, BLIP-2 auto-captioning, CLIP evaluation
-- **Computer Vision** — background removal, image segmentation, alpha matting, mask refinement
-- **Model compression** — structured pruning, knowledge distillation
-- **LLM pipelines** — multi-stage routing, prompt engineering, NL2SQL
-- **Embeddings** — semantic similarity, UMAP, nearest-neighbour retrieval, XGBoost
+- **Agents & RAG:** LangChain agents, ChromaDB vector stores, ReAct reasoning, tool routing
+- **LLM Evaluation:** LangSmith tracing, embedding distance metrics, model benchmarking
+- **Fine-tuning & PEFT:** LoRA, QLoRA, 4-bit quantization, SFT training
+- **Diffusion model adaptation:** SDXL LoRA, DreamBooth, BLIP-2 auto-captioning, CLIP evaluation
+- **Computer vision:** background removal, image segmentation, alpha matting, mask refinement
+- **Model compression:** structured pruning, knowledge distillation
+- **LLM pipelines:** multi-stage routing, prompt engineering, NL2SQL
+- **Embeddings:** semantic similarity, UMAP, nearest-neighbour retrieval, XGBoost
 
 ---
 
 ## License
 
-MIT License — free to use, adapt, and build upon with attribution.
+MIT License. Free to use, adapt, and build upon with attribution.
