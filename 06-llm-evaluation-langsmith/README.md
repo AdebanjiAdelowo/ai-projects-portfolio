@@ -1,4 +1,4 @@
-# 06 — LLM Evaluation with LangSmith & Embedding Distance
+# 06: LLM Evaluation with LangSmith & Embedding Distance
 
 **Author:** Adebanji Oluwatimileyin Adelowo
 
@@ -40,10 +40,5 @@ HUGGINGFACEHUB_API_TOKEN=your-hf-key
 ```
 
 ## Results Summary
-| Model | Embedding Distance (lower = better) |
-|---|---|
-| T5-base (zero-shot) | Higher |
-| T5-CNN-DM (fine-tuned) | Lower |
-| OpenAI GPT | Lowest |
 
-Fine-tuning on the target domain significantly closes the gap with the proprietary model.
+The notebook runs each model's summaries through a LangSmith `embedding_distance` evaluator and links out to the resulting experiments (`T5-BASE`, `T5-FineTuned`, `OpenAI-GPT4o-mini`) on the LangSmith dashboard rather than printing or saving the distance scores locally, so no numeric embedding-distance values are available in this repository to report here. The evaluation dataset saved in the notebook also has only 3 example articles, too small to treat any ranking as a robust benchmark. Not yet measured/available locally: which model achieves the lowest embedding distance.

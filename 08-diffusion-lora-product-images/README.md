@@ -1,16 +1,18 @@
-# 08 — Diffusion LoRA Fine-Tuning on Product Images
+# 08: Diffusion LoRA Fine-Tuning on Product Images
 
 **Author:** Adebanji Oluwatimileyin Adelowo
 
 ## Overview
 
-LoRA fine-tuning of a Stable Diffusion model on a curated product image dataset (eyewear / e-commerce photography). Demonstrates domain adaptation of a generative diffusion model with minimal compute — training only low-rank adapter weights on top of a frozen base model.
+LoRA fine-tuning of a Stable Diffusion model on a curated product image dataset (eyewear / e-commerce photography). Demonstrates domain adaptation of a generative diffusion model with minimal compute, training only low-rank adapter weights on top of a frozen base model.
 
-The MVP produces a LoRA checkpoint that steers SDXL or SD 1.5 toward consistent, on-brand product imagery when prompted with a trigger token.
+The pipeline is designed to produce a LoRA checkpoint that steers SDXL or SD 1.5 toward consistent, on-brand product imagery when prompted with a trigger token.
+
+**Status:** the curation, training, inference, and evaluation code (scripts and notebooks below) is implemented and configured, but the training run itself has not been executed against a real image dataset in this repository. `data/` currently holds only a metadata schema and sample CSV, and `results/results_template.md` is an unfilled template, not a results writeup.
 
 ---
 
-## Project Scope & MVP
+## Project Scope
 
 | Dimension | Decision |
 |---|---|
@@ -75,8 +77,7 @@ The MVP produces a LoRA checkpoint that steers SDXL or SD 1.5 toward consistent,
 │   ├── workflow.json             # Exportable ComfyUI workflow
 │   └── comfyui_notes.md          # Setup and documentation
 ├── results/
-│   ├── results_template.md       # Structured results writeup
-│   └── sample_grid_layout.md     # How to assemble image grids
+│   └── results_template.md       # Structured results writeup
 ├── requirements.txt
 └── README.md
 ```
@@ -135,16 +136,9 @@ python scripts/infer.py \
 
 ---
 
-## Results Summary
+## Results
 
-| Metric | Base SDXL | Fine-tuned LoRA |
-|---|---|---|
-| CLIP Score (domain prompts) | 0.27 | 0.33 |
-| Style Consistency (visual, /5) | 2.1 | 3.9 |
-| Background Consistency | Low | High |
-| Trigger-word Adherence | N/A | Strong |
-
-*Full results, sample grids, and failure analysis in [results/results_template.md](results/results_template.md) and [notebooks/04_results_analysis.ipynb](notebooks/04_results_analysis.ipynb).*
+No training run has been executed in this repository yet, so there are no measured CLIP scores or comparison grids to report here. `notebooks/04_results_analysis.ipynb` and [results/results_template.md](results/results_template.md) define the report format (CLIP score, style-consistency rating, before/after grids, training curve, failure analysis) to be filled in once a run completes on real product images.
 
 ---
 
@@ -152,7 +146,7 @@ python scripts/infer.py \
 
 - Dataset size (80–150 images) constrains generalization; model memorizes rather than learns broad distribution.
 - Trained on free-tier GPU; no hyperparameter sweep performed.
-- No automated perceptual metric (FID) computed — requires a reference dataset of sufficient size.
+- No automated perceptual metric (FID) computed: requires a reference dataset of sufficient size.
 - ComfyUI workflow tested locally; not deployed as a service.
 
 ---
@@ -164,7 +158,7 @@ A complete ComfyUI workflow is documented in [comfyui/](comfyui/) covering:
 - Prompt conditioning for product photography variations
 - Batch generation for style consistency review
 
-See [comfyui/comfyui_notes.md](comfyui/comfyui_notes.md) for setup, workflow explanation, and recruiter-friendly documentation.
+See [comfyui/comfyui_notes.md](comfyui/comfyui_notes.md) for setup and workflow explanation.
 
 ---
 
@@ -177,7 +171,7 @@ In diffusion U-Nets, LoRA injects trainable low-rank matrices into cross-attenti
 W' = W + α · (A · B)   where A ∈ R^(d×r), B ∈ R^(r×k), r << d
 ```
 
-Only `A` and `B` are trained — typically <0.5% of total parameters. The frozen base model's general image knowledge is preserved; the adapters steer it toward the target domain.
+Only `A` and `B` are trained, typically <0.5% of total parameters. The frozen base model's general image knowledge is preserved; the adapters steer it toward the target domain.
 
 ### Trigger-Word Captioning
 Captions follow the pattern:

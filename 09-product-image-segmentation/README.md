@@ -1,6 +1,6 @@
 # Product Image Segmentation and Matting Pipeline
 
-> Automated background removal for e-commerce product photography — comparing BiRefNet, U²-Net, and MODNet with a production-ready FastAPI demo.
+> Automated background removal for e-commerce product photography: comparing BiRefNet, U²-Net, and MODNet behind a FastAPI demo.
 
 [![CI](https://github.com/adebanjiadelowo/ProductImageSegmentation/actions/workflows/ci.yml/badge.svg)](https://github.com/adebanjiadelowo/ProductImageSegmentation/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
@@ -10,12 +10,14 @@
 
 ## Motivation
 
-Clean, transparent-background product images are a core requirement in e-commerce, eyewear, and lifestyle photography. Manual masking in Photoshop is slow and expensive at scale. This project evaluates state-of-the-art deep learning approaches for fully automated product segmentation and matting — with emphasis on edge quality, soft alpha accuracy, and deployment readiness.
+Clean, transparent-background product images are a core requirement in e-commerce, eyewear, and lifestyle photography. Manual masking in Photoshop is slow and expensive at scale. This project compares several deep learning approaches for fully automated product segmentation and matting, with emphasis on edge quality, soft alpha accuracy, and deployment readiness.
 
 The pipeline accepts a single product image and produces:
 - A binary or soft **segmentation mask**
 - A transparent-background **RGBA composite** (PNG with alpha channel)
 - Quantitative evaluation metrics against ground-truth annotations
+
+**Status:** the pipeline, evaluation, and API code below is implemented, but as currently committed the FastAPI app fails to import (`api/main.py` imports `src.data.io`, a module that does not exist in this repository, so `uvicorn api.main:app` and the mocked API tests both fail with `ModuleNotFoundError`). Of the three model wrappers, only `BiRefNetModel.load()` has a working implementation; `U2NetModel.load()` and `MODNetModel.load()` are stubs that raise `NotImplementedError` pending the architecture import, and only BiRefNet and U²-Net are wired into the API's model selector (MODNet is not). Treat the FastAPI demo and multi-model comparison as not currently runnable rather than as a working service.
 
 ---
 
@@ -52,7 +54,7 @@ Input Image
 
 | Model | Architecture | Input Size | Strengths | Notes |
 |-------|-------------|-----------|-----------|-------|
-| **BiRefNet** | Transformer (Swin-B) | 1024×1024 | SOTA accuracy, fine edge detail | Loads from HuggingFace, no manual download |
+| **BiRefNet** | Transformer (Swin-B) | 1024×1024 | High accuracy, fine edge detail | Loads from HuggingFace, no manual download |
 | **U²-Net** | Nested U-Net CNN | 320×320 | Fast, lightweight, salient object | ~176 MB weights, great baseline |
 | **U²-Netp** | Lightweight U²-Net | 320×320 | 4 MB, API-friendly | Some quality trade-off vs U²-Net |
 | **MODNet** | Mobile + semantic branches | 512×512 | Soft alpha, fine hair/edge detail | Designed for matting, not just segmentation |
@@ -63,7 +65,7 @@ Input Image
 ## Dataset
 
 ### Option A: DIS5K (Recommended)
-[Dichotomous Image Segmentation](https://github.com/xuebinqin/DIS) — 5,470 high-resolution images with pixel-accurate masks across diverse object categories including products, animals, and structures.
+[Dichotomous Image Segmentation](https://github.com/xuebinqin/DIS), 5,470 high-resolution images with pixel-accurate masks across diverse object categories including products, animals, and structures.
 
 ```
 data/
@@ -98,21 +100,7 @@ Image and mask files must share the same stem: `glasses_01.jpg` ↔ `glasses_01.
 
 ## Results
 
-> Replace the placeholder values below with your actual evaluation output from `python scripts/evaluate.py`.
-
-| Model | IoU ↑ | Dice ↑ | MAD ↓ | BoundaryF1 ↑ | Avg Speed (ms/img) |
-|-------|-------|--------|-------|--------------|-------------------|
-| BiRefNet | — | — | — | — | — |
-| U²-Net | — | — | — | — | — |
-| MODNet | — | — | — | — | — |
-
-*Evaluated on [dataset name], [N] images, CPU / GPU: [hardware].*
-
-### Qualitative Examples
-
-| Input | BiRefNet | U²-Net | Ground Truth |
-|-------|----------|--------|--------------|
-| *(add your own images in outputs/visuals/)* | | | |
+The evaluation script (`scripts/evaluate.py`) computes IoU, Dice, MAD, and boundary F1 for each model against ground-truth masks, but no evaluation run has been recorded in this repository yet (`outputs/eval/` is empty). Running it against a labeled dataset (see Dataset section below) produces a Markdown table in the same shape as the metrics table above, which can be pasted in here once available.
 
 ---
 
@@ -129,7 +117,7 @@ pip install -r requirements.txt
 ### 2. Get model weights
 
 ```bash
-# BiRefNet — no download needed (fetched from HuggingFace on first run)
+# BiRefNet: no download needed (fetched from HuggingFace on first run)
 
 # U2Net (optional)
 bash scripts/download_weights.sh
@@ -173,6 +161,8 @@ Outputs a Markdown table you can paste directly into this README.
 ---
 
 ## FastAPI Demo
+
+**Currently broken:** `api/main.py` imports `src.data.io`, which does not exist in this repository, so the command below raises `ModuleNotFoundError` rather than starting the server. See the Status note above.
 
 ```bash
 uvicorn api.main:app --reload
@@ -235,53 +225,36 @@ ProductImageSegmentation/
 
 ---
 
-## Implementation Plan
-
-| Phase | Tasks | Status |
-|-------|-------|--------|
-| **1 — Scaffold** | Project structure, base model interface, I/O | ✅ |
-| **2 — Baseline** | BiRefNet integration, single-image pipeline | ⬜ |
-| **3 — Postprocessing** | Mask refinement, RGBA composite export | ⬜ |
-| **4 — Evaluation** | Metrics suite, evaluation script, results table | ⬜ |
-| **5 — Model 2** | U²-Net integration, compare vs BiRefNet | ⬜ |
-| **6 — Model 3** | MODNet integration, soft alpha comparison | ⬜ |
-| **7 — API** | FastAPI endpoint, test with curl | ⬜ |
-| **8 — Tests** | pytest suite, CI pipeline | ⬜ |
-| **9 — Visuals** | README images, comparison grids | ⬜ |
-| **10 — Stretch** | SAM2 auto mode, fine-tuning on eyewear subset | ⬜ |
-
----
-
 ## Limitations
 
-- **CPU inference is slow** — BiRefNet at 1024×1024 takes ~5–15s per image on CPU. Use a GPU or switch to U²-Netp for latency-sensitive use cases.
-- **No fine-tuning** — all models are used zero-shot. A domain-specific eyewear dataset would close the gap on glasses reflections and transparent lenses.
-- **Transparent objects** — all methods struggle with glass lenses, clear packaging, and reflective surfaces where the foreground and background blend.
-- **No video support** — SAM2's video memory module is not wired up in this pipeline.
+- **CPU inference is slow**: BiRefNet at 1024×1024 takes ~5–15s per image on CPU. Use a GPU or switch to U²-Netp for latency-sensitive use cases.
+- **No fine-tuning**: all models are used zero-shot. A domain-specific eyewear dataset would close the gap on glasses reflections and transparent lenses.
+- **Transparent objects**: all methods struggle with glass lenses, clear packaging, and reflective surfaces where the foreground and background blend.
+- **No video support**: SAM2's video memory module is not wired up in this pipeline.
 
 ---
 
 ## Future Work
 
-- [ ] Fine-tune BiRefNet on an eyewear/glasses dataset
-- [ ] Add SAM2 auto-mode as a fourth comparison model
-- [ ] Build a minimal Gradio or Streamlit frontend for visual demos
-- [ ] Add ONNX export for portable deployment
-- [ ] Benchmark on GPU and add speed vs. quality Pareto chart
-- [ ] Explore test-time augmentation (TTA) for mask stability
+- Fine-tune BiRefNet on an eyewear/glasses dataset
+- Add SAM2 auto-mode as a fourth comparison model
+- Build a minimal Gradio or Streamlit frontend for visual demos
+- Add ONNX export for portable deployment
+- Benchmark on GPU and add a speed vs. quality comparison
+- Explore test-time augmentation (TTA) for mask stability
 
 ---
 
 ## References
 
-- [BiRefNet](https://github.com/zhengpeng7/BiRefNet) — Zheng et al., 2024
-- [U²-Net](https://github.com/xuebinqin/U-2-Net) — Qin et al., 2020
-- [MODNet](https://github.com/ZHKKKe/MODNet) — Ke et al., 2022
-- [SAM 2](https://github.com/facebookresearch/sam2) — Ravi et al., 2024
-- [DIS5K Dataset](https://github.com/xuebinqin/DIS) — Xin et al., 2022
+- [BiRefNet](https://github.com/zhengpeng7/BiRefNet): Zheng et al., 2024
+- [U²-Net](https://github.com/xuebinqin/U-2-Net): Qin et al., 2020
+- [MODNet](https://github.com/ZHKKKe/MODNet): Ke et al., 2022
+- [SAM 2](https://github.com/facebookresearch/sam2): Ravi et al., 2024
+- [DIS5K Dataset](https://github.com/xuebinqin/DIS): Xin et al., 2022
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License, see [LICENSE](LICENSE) for details.

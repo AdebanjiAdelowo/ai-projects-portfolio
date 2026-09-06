@@ -9,8 +9,8 @@
 
 A production-style **Natural Language to SQL** system designed for large enterprise databases. Rather than blindly feeding every table schema to the model on each query (expensive and inaccurate), this pipeline uses a two-stage architecture:
 
-1. **Stage 1 — Table Selector:** A lightweight model reads short table descriptions and returns only the tables needed to answer the question
-2. **Stage 2 — SQL Generator:** A capable SQL model receives a focused prompt containing only the relevant schemas, sample rows, and few-shot examples
+1. **Stage 1, Table Selector:** A lightweight model reads short table descriptions and returns only the tables needed to answer the question
+2. **Stage 2, SQL Generator:** A capable SQL model receives a focused prompt containing only the relevant schemas, sample rows, and few-shot examples
 
 An additional **complexity router** automatically escalates ambiguous or multi-table queries from GPT-3.5-turbo to GPT-4o-mini.
 
@@ -60,9 +60,11 @@ User Question
 
 ## Results
 
+Measured on the 5 demo questions in `02_SQL_Generator.ipynb`, from the saved `prompt_size_reduction.png` chart (full 8-table schema baseline: 523 words):
+
 | Metric | Value |
 |--------|-------|
-| Average token reduction vs. full schema | ~60% |
+| Average token reduction vs. full schema | ~63% |
 | Retry logic | up to 3 attempts with backoff |
 | SQL injection guard | blocks destructive keywords |
 | Model routing | automatic fast/strong selection |
@@ -71,11 +73,11 @@ User Question
 
 | Query | Tables selected | Prompt (words) | Reduction |
 |-------|----------------|----------------|-----------|
-| Employee headcount by dept | 2 | ~180 | 67% |
-| Highest-paid graduates | 3 | ~270 | 51% |
-| Most hours worked | 2 | ~200 | 64% |
-| London office high performers | 3 | ~280 | 49% |
-| Bonus per department | 3 | ~260 | 53% |
+| Employee headcount by dept | 2 | 152 | 70% |
+| Highest-paid graduates | 2 | 193 | 63% |
+| Most hours worked | 2 | 162 | 69% |
+| London office high performers | 3 | 212 | 59% |
+| Bonus per department | 3 | 248 | 52% |
 
 ---
 

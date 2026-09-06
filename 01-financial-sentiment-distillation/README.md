@@ -11,11 +11,11 @@ This project implements a full model compression pipeline on **FinBERT** (`Prosu
 
 The goal is to produce a significantly smaller and faster model without sacrificing accuracy, using two complementary techniques:
 
-1. **Structural Pruning** — remove unimportant attention heads and entire encoder layers
-2. **Knowledge Distillation** — train the pruned model to mimic the original's soft output distributions
+1. **Structural Pruning**, remove unimportant attention heads and entire encoder layers
+2. **Knowledge Distillation**, train the pruned model to mimic the original's soft output distributions
 
 ### Why this matters
-Deploying 110M-parameter transformer models in production is expensive. This pipeline shows how to compress a model by ~20% in parameter count while **recovering accuracy above the original baseline** through distillation — a technique used by major AI labs (Microsoft, Google, NVIDIA) in building model families.
+Deploying 110M-parameter transformer models in production is expensive. This pipeline shows how to compress a model by ~19% in parameter count while **recovering almost all of the accuracy lost to pruning** through distillation, a technique used by major AI labs in building smaller model families.
 
 ---
 
@@ -47,14 +47,16 @@ FinBERT (110M params, baseline)
 
 ## Results
 
+Measured on the `financial_phrasebank` test split (453 sentences), from the saved `baseline_results.json`, `pruning_results.json`, and `kd_results.json` outputs:
+
 | Model | Accuracy | Weighted F1 | Params | Size |
 |-------|----------|-------------|--------|------|
-| Baseline FinBERT | 84.5% | 0.843 | 110M | ~420 MB |
-| Head Pruned | ~80% | ~0.79 | 102M | ~390 MB |
-| Layer Dropped | ~76% | ~0.75 | 88M | ~337 MB |
-| **Distilled Student** | **96.9%** | **0.969** | **88M** | **337 MB** |
+| Baseline FinBERT | 97.57% | 0.9761 | 109.48M | 417.67 MB |
+| Head Pruned (30% of heads) | 95.36% | 0.9530 | 109.48M | 417.67 MB |
+| Layer Dropped (3 layers) | 61.81% | 0.4804 | 88.22M | 336.55 MB |
+| **Distilled Student** | **96.91%** | **0.9691** | **88.22M** | **336.55 MB** |
 
-> The distilled model **outperforms the original baseline** — soft targets from the teacher provide richer training signal than one-hot labels alone.
+Dropping 3 encoder layers cuts accuracy sharply (97.57% to 61.81%); distillation recovers nearly all of it (96.91%, 0.66pp below the uncompressed baseline) while keeping the ~19% reduction in parameters and model size. Head pruning alone (zeroing low-importance attention heads without removing them structurally) does not reduce parameter count or size, only the layer-dropping step does.
 
 ---
 
@@ -66,7 +68,7 @@ FinBERT (110M params, baseline)
 | `02_Model_Pruning.ipynb` | Taylor-gradient attention head pruning + activation-norm layer dropping, save pruned student model |
 | `03_Knowledge_Distillation.ipynb` | Pre-compute teacher logits, run KL+CE distillation training, benchmark and save distilled model |
 
-**Run in order** — each notebook saves artifacts loaded by the next.
+**Run in order**, each notebook saves artifacts loaded by the next.
 
 ---
 
@@ -87,7 +89,7 @@ Approximates the loss increase caused by removing a parameter:
 Heads with the lowest scores have their output projection zeroed.
 
 **Activation-Norm Importance (Layer Dropping)**  
-Layers whose hidden states have consistently small norms contribute little to the representation — these are removed entirely.
+Layers whose hidden states have consistently small norms contribute little to the representation, these are removed entirely.
 
 **Knowledge Distillation Loss**  
 `L = α · T² · KL(σ(z_s/T) ‖ σ(z_t/T)) + (1−α) · CE(z_s, y)`  

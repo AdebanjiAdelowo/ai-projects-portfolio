@@ -1,4 +1,4 @@
-# 05 — Medical RAG Assistant with LangChain & ChromaDB
+# 05: Medical RAG Assistant with LangChain & ChromaDB
 
 **Author:** Adebanji Oluwatimileyin Adelowo
 

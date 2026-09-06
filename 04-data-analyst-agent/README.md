@@ -1,9 +1,9 @@
-# 04 — LLM-Powered Data Analyst Agent
+# 04: LLM-Powered Data Analyst Agent
 
 **Author:** Adebanji Oluwatimileyin Adelowo
 
 ## Overview
-An autonomous data analyst agent built with LangChain and OpenAI that can analyze CSV/Excel datasets through natural language. The agent identifies relationships between variables, cleans data, selects appropriate models, and generates visualizations — all from plain English instructions.
+An autonomous data analyst agent built with LangChain and OpenAI that can analyze CSV/Excel datasets through natural language. The agent identifies relationships between variables, cleans data, selects appropriate models, and generates visualizations, all from plain English instructions.
 
 ## Key Skills Demonstrated
 - LangChain agent construction with `create_pandas_dataframe_agent`

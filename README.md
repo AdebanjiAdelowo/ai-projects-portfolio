@@ -39,9 +39,9 @@ FinBERT (baseline) → Attention Head Pruning → Layer Dropping → Knowledge D
 
 | Model | Accuracy | F1 | Params (M) | Size (MB) |
 |-------|----------|----|-----------|-----------|
-| Baseline FinBERT | 84.5% | 0.843 | 110M | ~420 MB |
-| After Pruning | ~76% | ~0.75 | 88M | ~337 MB |
-| Distilled Student | **96.9%** | **0.969** | 88M | 337 MB |
+| Baseline FinBERT | 97.57% | 0.9761 | 109.48M | 417.67 MB |
+| After Layer Dropping | 61.81% | 0.4804 | 88.22M | 336.55 MB |
+| Distilled Student | **96.91%** | **0.9691** | 88.22M | 336.55 MB |
 
 **Tech stack:** PyTorch, HuggingFace Transformers, financial_phrasebank dataset, scikit-learn
 
@@ -59,7 +59,7 @@ User Question → [Stage 1: Table Selector (GPT-3.5)] → Selected Tables
              → [Stage 2: SQL Generator (GPT-3.5 / GPT-4o-mini)] → SQL Query
 ```
 
-**Results:** approximately 60% token reduction by selecting only relevant tables, plus automatic model routing between the two stages.
+**Results:** approximately 63% average token reduction (measured across 5 demo queries) by selecting only relevant tables, plus automatic model routing between the two stages.
 
 **Tech stack:** OpenAI API, pandas, matplotlib
 
@@ -108,7 +108,7 @@ User Query → ReAct Agent → ChromaDB retrieval (medical) OR direct LLM (gener
 
 A systematic evaluation framework comparing LLM summarization quality using LangSmith tracing and cosine embedding distance. Benchmarks T5-base, fine-tuned T5, and OpenAI GPT on the CNN/DailyMail dataset, demonstrating the cost-quality tradeoff between open-source and proprietary models.
 
-**Results:** fine-tuned T5 significantly outperforms zero-shot T5; OpenAI GPT achieves the lowest embedding distance.
+**Results:** the notebook links out to per-model LangSmith embedding-distance experiments rather than saving numeric scores locally, so no embedding-distance ranking is available to report here; the saved evaluation dataset is also only 3 articles.
 
 **Tech stack:** LangSmith, LangChain, Hugging Face (T5), OpenAI, CNN/DailyMail dataset
 
@@ -132,7 +132,7 @@ Parameter-efficient fine-tuning of large language models using LoRA and QLoRA. D
 
 **Folder:** `08-diffusion-lora-product-images/`
 
-Domain adaptation of a Stable Diffusion model (SDXL 1.0) on a curated eyewear product photography dataset using LoRA. Only low-rank adapter weights are trained on top of the frozen base model, enabling domain-specific generation in approximately 4 hours on a free-tier T4 GPU.
+A pipeline for domain adaptation of a Stable Diffusion model (SDXL 1.0) on eyewear product photography using LoRA: only low-rank adapter weights are trained on top of the frozen base model, sized to run in a few hours on a free-tier T4 GPU. The curation, training, and evaluation code is implemented, but no training run has been executed against a real image dataset in this repository yet.
 
 **Pipeline:**
 ```
@@ -156,7 +156,7 @@ Raw Images → Curation (filter / resize / dedup) → BLIP-2 Auto-Caption (+ tri
 
 **Folder:** `09-product-image-segmentation/`
 
-A multi-model benchmark and pipeline for background removal on e-commerce product images. Three segmentation models share a common `BaseSegmentationModel` interface and are evaluated head-to-head on IoU, Dice, MAD, and boundary F1, with a FastAPI service exposing the best model.
+A pipeline for background removal on e-commerce product images. Three segmentation models share a common `BaseSegmentationModel` interface, with an evaluation script (IoU, Dice, MAD, boundary F1) to compare them, and a FastAPI service intended to serve any of them. No evaluation run has been recorded in the repository yet, and as currently committed the FastAPI app fails to import (a missing `src.data` module) and only the BiRefNet model wrapper is actually implemented; U²-Net and MODNet are stubs.
 
 **Architecture:**
 ```
