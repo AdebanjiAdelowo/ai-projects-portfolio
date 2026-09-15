@@ -25,7 +25,7 @@ A systematic evaluation framework comparing LLM summarization quality using Lang
 ## Notebooks
 | Notebook | Description |
 |---|---|
-| [llm_evaluation_langsmith.ipynb](notebooks/llm_evaluation_langsmith.ipynb) | Full evaluation pipeline: dataset creation → model inference → embedding distance scoring → comparison |
+| [llm_evaluation_langsmith_updated.ipynb](notebooks/llm_evaluation_langsmith_updated.ipynb) | Full evaluation pipeline: dataset creation → model inference → embedding distance scoring → comparison |
 
 ## Setup
 ```bash

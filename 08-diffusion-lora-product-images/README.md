@@ -60,8 +60,7 @@ The pipeline is designed to produce a LoRA checkpoint that steers SDXL or SD 1.5
 ├── configs/
 │   └── lora_config.yaml          # Training hyperparameters
 ├── data/
-│   ├── metadata_schema.json      # Caption + metadata format
-│   └── sample_metadata.csv       # Example populated metadata
+│   └── metadata_schema.json      # Caption + metadata format
 ├── scripts/
 │   ├── curate_dataset.py         # Filtering, resizing, dedup
 │   ├── generate_captions.py      # BLIP-2 auto-captioning
@@ -74,8 +73,7 @@ The pipeline is designed to produce a LoRA checkpoint that steers SDXL or SD 1.5
 │   ├── 03_inference_comparison.ipynb
 │   └── 04_results_analysis.ipynb
 ├── comfyui/
-│   ├── workflow.json             # Exportable ComfyUI workflow
-│   └── comfyui_notes.md          # Setup and documentation
+│   └── comfyui_notes.md          # ComfyUI workflow setup and documentation
 ├── results/
 │   └── results_template.md       # Structured results writeup
 ├── requirements.txt
