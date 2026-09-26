@@ -56,7 +56,16 @@ Measured on the `financial_phrasebank` test split (453 sentences), from the save
 | Layer Dropped (3 layers) | 61.81% | 0.4804 | 88.22M | 336.55 MB |
 | **Distilled Student** | **96.91%** | **0.9691** | **88.22M** | **336.55 MB** |
 
+The distilled result comes from a single distillation epoch: `03_Knowledge_Distillation.ipynb` uses 1 epoch on CPU and 3 on a GPU, and the saved run used 1.
+
 Dropping 3 encoder layers cuts accuracy sharply (97.57% to 61.81%); distillation recovers nearly all of it (96.91%, 0.66pp below the uncompressed baseline) while keeping the ~19% reduction in parameters and model size. Head pruning alone (zeroing low-importance attention heads without removing them structurally) does not reduce parameter count or size, only the layer-dropping step does.
+
+![Accuracy, weighted F1, model size and per-sample inference time for the four pipeline stages](full_pipeline_comparison.png)
+
+*The four stages side by side, plotted from the saved result JSON files. The inference-time panel
+is a single measurement per model: the distilled student and the layer-dropped model have the same
+architecture but different recorded times (13.38 and 9.32 ms/sample), so read the latency
+differences as indicative only.*
 
 ---
 
@@ -121,8 +130,6 @@ A GPU (e.g. Colab T4) is recommended for Notebook 3. Notebooks 1 and 2 run comfo
     └── 03_Knowledge_Distillation.ipynb
 ```
 
-Artifacts saved at runtime (gitignored):
-- `baseline_results.json`, `pruning_results.json`, `kd_results.json`
-- `data_splits.pkl`
-- `student_model/`, `distilled_model/`
-- PNG charts: confusion matrix, head/layer importance, training curves, pipeline comparison
+Artifacts written by the notebooks:
+- committed: `baseline_results.json`, `pruning_results.json`, `kd_results.json` and the PNG charts (confusion matrix, head/layer importance, training curves, pipeline comparison)
+- gitignored: `data_splits.pkl`, `student_model/`, `distilled_model/`

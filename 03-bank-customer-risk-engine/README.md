@@ -53,6 +53,13 @@ Customer Profile (text)
 | Regression targets | approval_prob, default_prob, adjusted_rate (simultaneous) |
 | Similarity search | Cosine nearest-neighbour over 500 embeddings |
 
+![Confusion matrices for logistic regression and XGBoost on the approval task](notebooks/confusion_matrices.png)
+
+*Approval classification on the 100-case test split (`03_Risk_Decision_Model.ipynb`). Logistic
+regression predicts "Rejected" for every case (67 of 100 correct, the majority-class rate).
+XGBoost classifies 93 of 100 correctly (62 true rejections, 31 true approvals, 5 false approvals,
+2 false rejections).*
+
 ---
 
 ## Notebooks
@@ -107,10 +114,10 @@ Note: even this comparatively strong profile is not approved by the trained mode
 Traditional risk models require hand-crafted feature engineering. Sentence embeddings capture semantic relationships directly from text, "software engineer with stable employment" and "senior developer with consistent income" map to nearby points in embedding space without any explicit rules.
 
 **UMAP Visualisation**  
-Reduces 384-dim embeddings to 2D for cluster analysis. Reveals natural groupings (e.g., high-income professionals, students, retirees) without any labels.
+Reduces 384-dim embeddings to 2D for visual inspection (`notebooks/client_embeddings_umap.png`). The saved plot shows several tight clusters, but they are not ordered by credit score or by income, and the notebook does not analyse which profile fields separate them. The profiles are synthetic: numeric fields such as income and credit score are drawn independently at random in `01_Client_Embeddings.ipynb`.
 
 **Multi-output Regression**  
-A single model simultaneously predicts approval probability, default probability, and adjusted interest rate, ensuring internal consistency between outputs that separate models cannot guarantee.
+Approval score, default probability, and adjusted interest rate are predicted by scikit-learn's `MultiOutputRegressor` wrapping `GradientBoostingRegressor`, which fits one independent regressor per target; the three outputs are not constrained to be consistent with each other.
 
 ---
 
@@ -136,6 +143,6 @@ No API keys required, all models run locally.
     └── 03_Risk_Decision_Model.ipynb
 ```
 
-Artifacts saved at runtime (gitignored):
-- `client_embeddings.pkl`, `transaction_embeddings.pkl`, `product_catalogue_embeddings.pkl`
-- UMAP PNG charts, confusion matrices
+Artifacts written by the notebooks:
+- committed: UMAP charts and confusion matrices (`notebooks/*.png`)
+- gitignored: `client_embeddings.pkl`, `transaction_embeddings.pkl`, `product_catalogue_embeddings.pkl`

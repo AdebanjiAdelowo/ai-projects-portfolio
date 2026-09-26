@@ -59,7 +59,7 @@ User Question → [Stage 1: Table Selector (GPT-3.5)] → Selected Tables
              → [Stage 2: SQL Generator (GPT-3.5 / GPT-4o-mini)] → SQL Query
 ```
 
-**Results:** approximately 63% average token reduction (measured across 5 demo queries) by selecting only relevant tables, plus automatic model routing between the two stages.
+**Results:** approximately 63% average prompt-size reduction in words (measured across 5 demo queries) by selecting only relevant tables, plus automatic model routing between the two stages.
 
 **Tech stack:** OpenAI API, pandas, matplotlib
 

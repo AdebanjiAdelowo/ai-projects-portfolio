@@ -64,12 +64,12 @@ Measured on the 5 demo questions in `02_SQL_Generator.ipynb`, from the saved `pr
 
 | Metric | Value |
 |--------|-------|
-| Average token reduction vs. full schema | ~63% |
+| Average prompt-size reduction vs. full schema (word count) | ~63% |
 | Retry logic | up to 3 attempts with backoff |
 | SQL injection guard | blocks destructive keywords |
 | Model routing | automatic fast/strong selection |
 
-### Token reduction by query type
+### Prompt-size reduction by query type
 
 | Query | Tables selected | Prompt (words) | Reduction |
 |-------|----------------|----------------|-----------|
@@ -78,6 +78,11 @@ Measured on the 5 demo questions in `02_SQL_Generator.ipynb`, from the saved `pr
 | Most hours worked | 2 | 162 | 69% |
 | London office high performers | 3 | 212 | 59% |
 | Bonus per department | 3 | 248 | 52% |
+
+![Prompt size in words for five demo questions against the 523-word full-schema baseline](notebooks/prompt_size_reduction.png)
+
+*Prompt size for the five demo questions (Q1 to Q5 in the table order above) against the full
+8-table schema baseline. Sizes are approximate word counts, not tokenizer counts.*
 
 ---
 
@@ -139,5 +144,9 @@ OPENAI_API_KEY=your_openai_api_key_here
 └── notebooks/
     ├── 01_Table_Selector.ipynb
     ├── 02_SQL_Generator.ipynb
-    └── 03_NL2SQL_Pipeline.ipynb
+    ├── 03_NL2SQL_Pipeline.ipynb
+    ├── 01_Chinook_Pipeline.ipynb     # pipeline run against the Chinook SQLite database (chinook.db)
+    ├── 01_Spider_Benchmark.ipynb     # evaluation on b-mc2/sql-create-context question/SQL pairs
+    ├── chinook.db
+    └── *.png                         # saved charts
 ```
