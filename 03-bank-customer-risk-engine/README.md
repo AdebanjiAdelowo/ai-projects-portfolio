@@ -56,9 +56,26 @@ Customer Profile (text)
 ![Confusion matrices for logistic regression and XGBoost on the approval task](notebooks/confusion_matrices.png)
 
 *Approval classification on the 100-case test split (`03_Risk_Decision_Model.ipynb`). Logistic
-regression predicts "Rejected" for every case (67 of 100 correct, the majority-class rate).
-XGBoost classifies 93 of 100 correctly (62 true rejections, 31 true approvals, 5 false approvals,
-2 false rejections).*
+regression (standardised features, regularisation chosen by cross-validation on the training split)
+classifies 91 of 100 correctly; XGBoost classifies 93 of 100 (62 true rejections, 31 true
+approvals, 5 false approvals, 2 false rejections).*
+
+About two thirds of the cases are rejections, so the table compares against always predicting
+"Rejected". The test split is over (customer, transaction) rows, and 66 of its 100 rows belong to
+customers who also appear in the training split. The notebook therefore also reports 5-fold
+cross-validation grouped by customer, which is the relevant estimate for a new customer:
+
+| Model | Test split: balanced accuracy | Test split: ROC-AUC | Grouped by customer: balanced accuracy | Grouped by customer: approved-class F1 | Grouped by customer: ROC-AUC |
+|---|---|---|---|---|---|
+| Always "Rejected" | 0.50 | n/a | 0.50 | 0.00 | n/a |
+| Logistic regression | 0.90 | 0.94 | 0.75 | 0.67 | 0.82 |
+| XGBoost | 0.93 | 0.97 | 0.64 | 0.50 | 0.76 |
+
+Both models learn more than the class prior, but much of the row-level test score comes from
+customers seen in training; on unseen customers XGBoost drops the most and is outperformed by
+logistic regression. With the notebook's original default settings (unscaled 768-dim embeddings,
+`C=1`), logistic regression predicted "Rejected" for every case: the embedding features vary by only
+about 0.016 each, so default regularisation kept every predicted probability below 0.5.
 
 ---
 
@@ -104,7 +121,7 @@ risk_decision(strong_customer, personal_loan)
 }
 ```
 
-Note: even this comparatively strong profile is not approved by the trained model. Both demo cases saved in the notebook return `approved: False`, so an approved-outcome example is not currently available from any saved run.
+Note: even this comparatively strong profile is not approved by the trained model, although the labelling rule in the notebook would approve it. Both demo cases saved in the notebook return `approved: False`, so an approved-outcome example is not currently available from any saved run. The demo's `embed_customer` also formats the profile text differently from the training text (for example it omits the credit-score band), which may contribute; this has not been tested.
 
 ---
 
