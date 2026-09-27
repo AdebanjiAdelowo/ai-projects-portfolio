@@ -72,8 +72,12 @@ cross-validation grouped by customer, which is the relevant estimate for a new c
 | XGBoost | 0.93 | 0.97 | 0.64 | 0.50 | 0.76 |
 
 Both models learn more than the class prior, but much of the row-level test score comes from
-customers seen in training; on unseen customers XGBoost drops the most and is outperformed by
-logistic regression. With the notebook's original default settings (unscaled 768-dim embeddings,
+customers seen in training. Repeating the grouped cross-validation over 10 different assignments of
+customers to folds gives balanced accuracy 0.74 ± 0.02 for logistic regression and 0.64 ± 0.02 for
+XGBoost (ROC-AUC 0.81 ± 0.02 and 0.77 ± 0.02), with logistic regression ahead in all 10. This is one
+synthetic dataset of 500 rows from 305 customers, with XGBoost's hyperparameters fixed rather than
+tuned, so it shows that XGBoost as configured here overfits to seen customers, not that logistic
+regression is generally the better model. With the notebook's original default settings (unscaled 768-dim embeddings,
 `C=1`), logistic regression predicted "Rejected" for every case: the embedding features vary by only
 about 0.016 each, so default regularisation kept every predicted probability below 0.5.
 
@@ -115,13 +119,15 @@ risk_decision(strong_customer, personal_loan)
 # Returns:
 {
   "approved":         False,
-  "approval_score":   0.24,
-  "default_prob":     0.315,
-  "recommended_rate": 12.38,
+  "approval_score":   0.378,
+  "default_prob":     0.298,
+  "recommended_rate": 12.04,
 }
 ```
 
-Note: even this comparatively strong profile is not approved by the trained model, although the labelling rule in the notebook would approve it. Both demo cases saved in the notebook return `approved: False`, so an approved-outcome example is not currently available from any saved run. The demo's `embed_customer` also formats the profile text differently from the training text (for example it omits the credit-score band), which may contribute; this has not been tested.
+The demo prints the notebook's own labelling rule alongside the model output: this profile satisfies the rule (`approved = True`), but the XGBoost model rejects it, as it does Demo 2 (which the rule also rejects). The decision comes from XGBoost, which the customer-grouped check above shows recalls only about 40% of approvals for customers it has not seen.
+
+Customer and transaction text is built by one module, `notebooks/profile_text.py`, used by notebooks 01 and 02 for the training embeddings and by the demo for inference. Earlier, the demo formatted the text itself and differed from the training text in 11 places (for example it dropped the credit-score band, shortened field labels, and omitted the monthly instalment estimate). Using the training format raised Demo 1's approval score from 0.24 to 0.378, which is still below the 0.5 threshold. The training strings are unchanged by this refactor (all 500 customers and 500 transactions produce byte-identical text), so every metric above is unaffected. `tests/test_profile_text.py` checks the training format, that all notebooks use the shared functions, field order, and that missing fields raise an error instead of being filled with defaults.
 
 ---
 
@@ -154,7 +160,10 @@ No API keys required, all models run locally.
 03-bank-customer-risk-engine/
 ├── README.md
 ├── requirements.txt
+├── tests/
+│   └── test_profile_text.py      # train/inference text consistency (pytest tests/)
 └── notebooks/
+    ├── profile_text.py           # canonical customer/transaction text used for every embedding
     ├── 01_Client_Embeddings.ipynb
     ├── 02_Product_Embeddings.ipynb
     └── 03_Risk_Decision_Model.ipynb
