@@ -7,7 +7,7 @@
 
 ## Overview
 
-An embedding-powered **customer risk assessment and product recommendation engine** for retail banking. Instead of storing customer profiles as structured rows, this system encodes them as dense semantic vectors using a sentence transformer model. These embeddings capture nuanced meaning that traditional features miss, enabling similarity search, cluster analysis, and powerful downstream ML models.
+An embedding-based **customer risk assessment and product recommendation prototype** for retail banking, built on 500 synthetic customers. Instead of using the structured fields directly, each customer profile and loan request is written out as text and encoded with a sentence-transformer model, and the resulting vectors feed similarity search, clustering and downstream classifiers. Whether this representation adds anything over the underlying numeric fields is not tested here: there is no baseline model trained on the raw fields, and the approval labels are a simple rule applied to those same numbers.
 
 The final pipeline takes a plain-text customer description as input and outputs a complete risk decision: loan approval, default probability, and adjusted interest rate.
 
@@ -133,8 +133,9 @@ Customer and transaction text is built by one module, `notebooks/profile_text.py
 
 ## Key Concepts
 
-**Why embeddings over structured features?**  
-Traditional risk models require hand-crafted feature engineering. Sentence embeddings capture semantic relationships directly from text, "software engineer with stable employment" and "senior developer with consistent income" map to nearby points in embedding space without any explicit rules.
+**Why try embeddings instead of structured features?**
+
+Sentence embeddings can place similarly worded descriptions near each other without hand-built features. For numeric fields they are a weak fit, and the saved similarity search shows it (`01_Client_Embeddings.ipynb`): the three nearest neighbours of a customer with a credit score of 438 have cosine similarity above 0.99 but credit scores of 676, 340 and 336 and incomes from $38,017 to $155,504, so similarity is dominated by shared wording (age, employment type) rather than financial values. A model trained on the raw numeric fields is the natural baseline and has not been run.
 
 **UMAP Visualisation**  
 Reduces 384-dim embeddings to 2D for visual inspection (`notebooks/client_embeddings_umap.png`). The saved plot shows several tight clusters, but they are not ordered by credit score or by income, and the notebook does not analyse which profile fields separate them. The profiles are synthetic: numeric fields such as income and credit score are drawn independently at random in `01_Client_Embeddings.ipynb`.
