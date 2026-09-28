@@ -7,7 +7,7 @@
 
 ## Overview
 
-This project implements a full model compression pipeline on **FinBERT** (`ProsusAI/finbert`), a BERT-based model pre-trained on financial text for 3-class sentiment classification (positive / negative / neutral).
+This project implements a full model compression pipeline on **FinBERT** (`ProsusAI/finbert`), a BERT model further pre-trained on financial text and fine-tuned for 3-class sentiment classification (positive / negative / neutral) on the Financial PhraseBank (Araci, 2019).
 
 The goal is to produce a significantly smaller and faster model without sacrificing accuracy, using two complementary techniques:
 
@@ -56,6 +56,8 @@ Measured on the `financial_phrasebank` test split (453 sentences), from the save
 | Layer Dropped (3 layers) | 61.81% | 0.4804 | 88.22M | 336.55 MB |
 | **Distilled Student** | **96.91%** | **0.9691** | **88.22M** | **336.55 MB** |
 
+**Test-set overlap.** `ProsusAI/finbert` was fine-tuned on the Financial PhraseBank, and the 453-sentence test split here is a random 20% of that dataset's `sentences_allagree` subset, so most test sentences were probably seen during the baseline's fine-tuning (the model's exact training split is not reproduced here). The pruned and distilled models inherit that exposure through the baseline weights and the distillation targets. The absolute accuracies are therefore optimistic and are not an independent test; the finding is the relative effect of the compression steps (layer dropping 97.57% to 61.81%, distillation back to 96.91%) on the same split. An independent evaluation would need a baseline fine-tuned only on this project's training split, or test data outside the Financial PhraseBank.
+
 The distilled result comes from a single distillation epoch: `03_Knowledge_Distillation.ipynb` uses 1 epoch on CPU and 3 on a GPU, and the saved run used 1.
 
 Dropping 3 encoder layers cuts accuracy sharply (97.57% to 61.81%); distillation recovers nearly all of it (96.91%, 0.66pp below the uncompressed baseline) while keeping the ~19% reduction in parameters and model size. Head pruning alone (zeroing low-importance attention heads without removing them structurally) does not reduce parameter count or size, only the layer-dropping step does.
@@ -85,7 +87,7 @@ differences as indicative only.*
 
 **financial_phrasebank** (`sentences_allagree` split)  
 - ~2,264 financial sentences labelled by domain experts  
-- Labels: `positive` (0), `negative` (1), `neutral` (2)  
+- Labels: the dataset's integer labels (0 negative, 1 neutral, 2 positive) are remapped to FinBERT's label ids (0 positive, 1 negative, 2 neutral)  
 - Split: 80% train / 20% test
 
 ---

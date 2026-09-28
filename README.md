@@ -14,7 +14,7 @@ A collection of end-to-end projects spanning large language models, computer vis
 |---|---------|--------|----------------|
 | 01 | [Financial Sentiment Distillation](#01-financial-sentiment-distillation) | FinTech / NLP | Pruning, Knowledge Distillation |
 | 02 | [Enterprise NL2SQL Pipeline](#02-enterprise-nl2sql-pipeline) | Data Engineering | Multi-stage LLM routing, Prompt Engineering |
-| 03 | [Bank Customer Risk Engine](#03-bank-customer-risk-engine) | FinTech / ML | Embeddings, XGBoost, Multi-output Regression |
+| 03 | [Bank Customer Risk Engine](#03-bank-customer-risk-engine) | FinTech / ML | Embeddings, XGBoost, Classification, Multi-output Regression |
 | 04 | [LLM-Powered Data Analyst Agent](#04-llm-powered-data-analyst-agent) | Analytics | LangChain Agents, Pandas DataFrame Agent |
 | 05 | [Medical RAG Assistant](#05-medical-rag-assistant) | Healthcare / NLP | RAG, ChromaDB, Conversational Memory |
 | 06 | [LLM Evaluation with LangSmith](#06-llm-evaluation-with-langsmith) | MLOps / Evaluation | Embedding Distance, LangSmith Tracing |
@@ -43,6 +43,8 @@ FinBERT (baseline) → Attention Head Pruning → Layer Dropping → Knowledge D
 | After Layer Dropping | 61.81% | 0.4804 | 88.22M | 336.55 MB |
 | Distilled Student | **96.91%** | **0.9691** | 88.22M | 336.55 MB |
 
+Measured on a 453-sentence split of the Financial PhraseBank. The baseline (`ProsusAI/finbert`) was fine-tuned on that dataset, so most test sentences were probably seen in training: the absolute accuracies are optimistic, and the result is the relative effect of layer dropping and distillation.
+
 **Tech stack:** PyTorch, HuggingFace Transformers, financial_phrasebank dataset, scikit-learn
 
 ---
@@ -69,7 +71,7 @@ User Question → [Stage 1: Table Selector (GPT-3.5)] → Selected Tables
 
 **Folder:** `03-bank-customer-risk-engine/`
 
-An embedding-powered risk assessment engine for a retail bank. Customer profiles and transactions are encoded into dense vectors, then used to train a multi-output regression model predicting loan approval probability, default risk, and interest rate.
+An embedding-based risk assessment and product recommendation prototype for retail banking, built on 500 synthetic customers. Customer profiles and transactions are encoded into dense vectors, then used to train classifiers (XGBoost, logistic regression) for loan approval and a multi-output regression model for approval probability, default probability and adjusted interest rate. The approval labels are a simple rule applied to the same numeric fields, and there is no baseline trained on those fields directly.
 
 **Tech stack:** sentence-transformers, UMAP, XGBoost, scikit-learn
 
